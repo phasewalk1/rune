@@ -18,7 +18,7 @@ impl Default for RegisterCmd {
 }
 
 // Create a directory at $HOME/.config/rune/ to store user's contact list of public keys
-pub(crate) fn register_create_home(username: &str) -> std::io::Result<()> {
+pub fn register_create_home(username: &str) -> std::io::Result<()> {
     let home = dirs::home_dir().unwrap();
     if home.join(".config/rune").exists() {
         if home.join(format!(".config/rune/{}", username)).exists() {
