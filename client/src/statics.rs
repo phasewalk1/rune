@@ -21,6 +21,6 @@ pub static ASCII_ART: &'static str = r#"
          \|___|                  ~~                       \/____/                  \/____/         
                                                                                                    
 
-
+                                Just a silly little messenger.
 
 "#;

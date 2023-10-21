@@ -1,10 +1,12 @@
+#![allow(dead_code)]
+
 use crossterm::{
     event::{self, KeyCode},
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
     ExecutableCommand,
 };
 use ratatui::{
-    prelude::{CrosstermBackend, Rect, Stylize, Terminal},
+    prelude::{CrosstermBackend, Stylize, Terminal},
     style::Style,
     widgets::{List, ListItem, Paragraph},
 };
@@ -14,6 +16,9 @@ mod handlers;
 mod statics;
 mod theme;
 mod util;
+mod widgets;
+
+use statics::ASCII_ART as LOGO;
 
 fn main() -> Result<()> {
     stderr().execute(EnterAlternateScreen)?;
@@ -35,17 +40,9 @@ fn main() -> Result<()> {
         terminal.draw(|frame| {
             let area = frame.size();
 
-            let logo_height = crate::statics::ASCII_ART.lines().count() as u16;
+            let (logo_area, list_area) = util::get_areas(area);
 
-            let logo_area = Rect::new(area.x, area.y, area.width, logo_height);
-            let list_area = Rect::new(
-                area.x,
-                area.y + logo_height,
-                area.width,
-                area.height - logo_height,
-            );
-
-            frame.render_widget(Paragraph::new(crate::statics::ASCII_ART), logo_area);
+            frame.render_widget(Paragraph::new(LOGO), logo_area);
 
             let items: Vec<ListItem> = options
                 .iter()

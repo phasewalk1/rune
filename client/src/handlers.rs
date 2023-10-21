@@ -1,7 +1,7 @@
 use std::io::Stderr;
 
 use ratatui::{
-    prelude::CrosstermBackend,
+    prelude::{CrosstermBackend, Rect},
     style::{Style, Stylize},
     widgets::Paragraph,
     Terminal,
@@ -11,23 +11,42 @@ use rune_core::{
     crypto::keyring::{Keyring, KeyringEncryptor},
 };
 
+use crate::theme;
+
 pub fn handle_register(
     term: &mut Terminal<CrosstermBackend<Stderr>>,
 ) -> Result<(), std::io::Error> {
+    let username_input_field = crate::widgets::InputField::new("Enter username")
+        .style(theme::prompt_field_style())
+        .block(theme::prompt_field_block());
+
     term.draw(|frame| {
         let area = frame.size();
-        frame.render_widget(
-            Paragraph::new("Register").style(Style::default().white()),
-            area,
+
+        let centered_x = ((area.width.saturating_sub(username_input_field.width())) / 2)
+            .min(area.width - username_input_field.width());
+        let centered_y = ((area.height.saturating_sub(username_input_field.height())) / 2)
+            .min(area.height - username_input_field.height());
+        let area = Rect::new(
+            centered_x,
+            centered_y,
+            username_input_field.width(),
+            username_input_field.height(),
         );
+
+        frame.render_widget(username_input_field.clone(), area);
     })?;
-    let username = super::util::read_input(term, "Enter username");
+
+    let username = super::util::read_input(term, username_input_field);
+
     if let Some(user) = username {
         register_create_home(&user)?;
         let keypair = Keyring::generate();
         keypair.save_public_key(&user)?;
 
-        let passphrase = super::util::read_input(term, "Enter passphrase to encrypt keyring");
+        let passphrase_field =
+            crate::widgets::InputField::new("Enter passphrase to encrypt keyring").default_style();
+        let passphrase = super::util::read_input(term, passphrase_field);
 
         if let Some(pass) = passphrase {
             let encryptor = KeyringEncryptor::from(keypair);

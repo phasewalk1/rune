@@ -1,4 +1,7 @@
-use ratatui::style::{Color, Modifier, Style, Stylize};
+use ratatui::{
+    style::{Color, Modifier, Style, Stylize},
+    widgets::{Block, BorderType, Borders},
+};
 
 const PRIMARY: Color = Color::DarkGray;
 const SECONDARY: Color = Color::Cyan;
@@ -15,4 +18,16 @@ pub fn list_item_selected() -> Style {
         .fg(BACKGROUND)
         .bg(SECONDARY)
         .add_modifier(Modifier::BOLD)
+}
+
+pub fn prompt_field_style() -> Style {
+    Style::default().fg(Color::White).bg(Color::Blue)
+}
+
+pub fn prompt_field_block() -> Block<'static> {
+    Block::default()
+        .borders(Borders::LEFT | Borders::RIGHT)
+        .border_style(Style::default().fg(Color::White))
+        .border_type(BorderType::Rounded)
+        .style(Style::default().bg(Color::Blue))
 }
